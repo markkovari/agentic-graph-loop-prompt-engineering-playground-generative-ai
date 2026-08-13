@@ -1,0 +1,38 @@
+# The goal, versioned in the repo it acts on (ADR-0082).
+#
+# `comp goal run` reads this: what to do, which files may be written, and the
+# checks that decide whether a candidate is acceptable. The tests in
+# tests/test_slug.py are the real specification; this points the run at them.
+
+text = """
+Implement `slugify(text)` in src/textkit/slug.py.
+
+The function turns arbitrary text into a URL-safe slug:
+  - lowercase everything
+  - a run of spaces or underscores becomes a single hyphen
+  - drop any character that is not a-z, 0-9, or a hyphen
+  - collapse repeated hyphens into one
+  - strip leading and trailing hyphens
+
+The tests in tests/test_slug.py are the full specification and must pass.
+Write the complete file. Keep it small and add a short docstring.
+"""
+
+title = "Implement slugify()"
+
+writable = ["src/textkit/slug.py"]
+
+# The gate: every required check must pass for a candidate to be accepted.
+[[check]]
+id = "tests-pass"
+required = true
+weight = 2
+command = ["uv", "run", "--frozen", "pytest", "-q"]
+
+# A gradient among candidates that all pass the gate: a documented function is
+# preferred, but its absence does not reject anything.
+[[check]]
+id = "has-docstring"
+required = false
+weight = 1
+command = ["grep", "-q", '"""', "src/textkit/slug.py"]
